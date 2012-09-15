@@ -1,10 +1,13 @@
 map = { 
-
- 2,2,3,3,    
- 2,2,3,3,    
- 2,0,4,4,
- 2,2,2,2
+ 1,1,1,1,    
+ 1,0,0,1,    
+ 1,0,0,1,
+ 1,1,1,1
  }
+
+editorBlockSize = 20
+editorBlockSpace = 20
+
 
 function saveMapToDisk(map)
     local mapString = "map = {"
@@ -21,7 +24,6 @@ end
 
 function love.mousepressed(x, y, button)
     if button == "l" then
-       print ("MOUSE") 
        mouseInBox(x,y)
     end
 end
@@ -43,17 +45,33 @@ end
 function increaseMapSize()
     map = {}
     mapSize = mapSize + 1
-    for i=1,mapSize*mapSize do
-        map[i] = 0
-    end
+    generateMapWithSize(mapSize)
 end
 
 function decreaseMapSize()
     map = {}
     mapSize = mapSize - 1
     if (mapSize < 3) then mapSize = 3 end
-    for i=1,mapSize*mapSize do
-        map[i] = 0
+    generateMapWithSize(mapSize)
+end
+
+function generateMapWithSize(size)
+    map = {}
+    for i=1,size do
+        map[i] = 1
+    end
+    for i=1,mapSize- 1 do
+        i = i * mapSize + 1
+        map[i] = 1 
+        for j = 2,mapSize-1 do
+            i = i + 1
+            map[i] = 0
+        end
+        i = i + 1
+        map[i] = 1
+    end
+    for i=(mapSize*mapSize)-mapSize,(mapSize*mapSize) do
+        map[i] = 1
     end
 end
 
@@ -67,13 +85,13 @@ end
 
 function mouseInBox(x, y)
     for i=1,#map do
-        local bx = positionXFromArrayIndex(i)*40 
-        local by = positionYFromArrayIndex(i)*40
+        local bx = positionXFromArrayIndex(i)*editorBlockSpace 
+        local by = positionYFromArrayIndex(i)*editorBlockSpace
 --        print ("THIS IS BX: ".. bx)
  --       print ("THIS IS X: ".. x)
   --      print ("THIS IS BY: ".. by)
    --     print ("THIS IS Y: ".. y)
-        if (boxCollision(x,y,bx,by,25,25)) then changeTexture(i) end
+        if (boxCollision(x,y,bx,by,editorBlockSize,editorBlockSize)) then changeTexture(i) end
     end    
 end
 
@@ -99,9 +117,9 @@ function positionYFromArrayIndex(index)
 end
 
 function setQuads(numberOfImages)
-    QUADS[0] = love.graphics.newQuad(0, 0, 25, 25, tileSize, tileSize)
+    QUADS[0] = love.graphics.newQuad(0, 0, editorBlockSize, editorBlockSize, tileSize, tileSize)
     for i=1,numberOfImages do
-        QUADS[i] = love.graphics.newQuad(0,0 + ((i)*tileSize),25,25,tileSize,tileSize*numberOfImages)
+        QUADS[i] = love.graphics.newQuad(0,0 + ((i)*tileSize),editorBlockSize,editorBlockSize,tileSize,tileSize*numberOfImages)
     end
 end
 
@@ -123,7 +141,7 @@ screenWidth = windowWidth / screenScale
 screenHeight = windowHeight / screenScale
 
 function love.load()
-   love.graphics.setMode(640,480, false, true)
+   love.graphics.setMode(1280,800, true, true)
    love.mouse.setVisible(true)
 end
 
@@ -132,11 +150,10 @@ function love.draw()
         for j=0,mapSize-1 do
             local index = indexFromCoordinates(j,i)
             if (map[index] == 0) then
-                love.graphics.drawq(emptyWall,QUADS[map[index]],j*40,i*40,0,1,1)
+                love.graphics.drawq(emptyWall,QUADS[map[index]],j*editorBlockSpace,i*editorBlockSpace,0,1,1)
             else
-                love.graphics.drawq(wallsImgs,QUADS[map[index]],j*40,i*40,0,1,1)
+                love.graphics.drawq(wallsImgs,QUADS[map[index]],j*editorBlockSpace,i*editorBlockSpace,0,1,1)
             end
-            print (map[index])
         end
     end
 end
