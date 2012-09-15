@@ -29,7 +29,7 @@ end
 
 function changeSelectedTexture()
     selectedTexture = selectedTexture + 1
-    if (selectedTexture == numberOfImages) then
+    if (selectedTexture == numberOfImages+1) then
         selectedTexture = 0
     end
 end
@@ -134,8 +134,9 @@ end
 
 function setQuads(numberOfImages)
     QUADS[0] = love.graphics.newQuad(0, 0, editorBlockSize, editorBlockSize, tileSize, tileSize)
-    for i=1,numberOfImages do
-        QUADS[i] = love.graphics.newQuad(0,0 + ((i)*tileSize),editorBlockSize,editorBlockSize,tileSize,tileSize*numberOfImages)
+    print (numberOfImages)
+    for i=1,numberOfImages+1 do
+        QUADS[i] = love.graphics.newQuad(0,0 + ((i-1)*tileSize),editorBlockSize,editorBlockSize,tileSize,tileSize*numberOfImages)
     end
 end
 
