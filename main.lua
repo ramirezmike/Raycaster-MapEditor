@@ -7,7 +7,7 @@ map = {
 
 editorBlockSize = 20
 editorBlockSpace = 20
-
+selectedTexture = 1
 
 function saveMapToDisk(map)
     local mapString = "map = {"
@@ -21,10 +21,24 @@ function saveMapToDisk(map)
     file:close()
 end
 
-
 function love.mousepressed(x, y, button)
-    if button == "l" then
-       mouseInBox(x,y)
+    if button == 'r' then
+        changeSelectedTexture()
+    end
+end
+
+function changeSelectedTexture()
+    selectedTexture = selectedTexture + 1
+    if (selectedTexture == numberOfImages) then
+        selectedTexture = 0
+    end
+end
+
+
+function love.update(dt)
+    if love.mouse.isDown('l') then
+        local x, y = love.mouse.getPosition()
+        mouseInBox(x,y)
     end
 end
 
@@ -91,13 +105,12 @@ function mouseInBox(x, y)
  --       print ("THIS IS X: ".. x)
   --      print ("THIS IS BY: ".. by)
    --     print ("THIS IS Y: ".. y)
-        if (boxCollision(x,y,bx,by,editorBlockSize,editorBlockSize)) then changeTexture(i) end
+        if (boxCollision(x,y,bx,by,editorBlockSize,editorBlockSize)) then changeBoxTexture(i) end
     end    
 end
 
-function changeTexture(i)
-  map[i] = map[i] + 1 
-  if (map[i] > numberOfImages-1) then map[i] = 0 end
+function changeBoxTexture(i)
+  map[i] = selectedTexture 
 end
 function indexFromCoordinates(x,y)
     index = 1 + (math.floor(y)*mapSize) + (math.floor(x))
