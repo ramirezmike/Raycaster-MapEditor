@@ -21,6 +21,16 @@ function saveMapToDisk(map)
     file:close()
 end
 
+function loadMapFromDisk(mapName)
+    local e = love.filesystem.exists("map01.lua")
+    if (e) then 
+        print ("IT EXISTS")
+        chunk = love.filesystem.load(mapName)
+        map = chunk()
+        mapSize = math.sqrt(#map) 
+    end
+end
+
 function love.mousepressed(x, y, button)
     if button == 'r' then
         changeSelectedTexture()
@@ -60,6 +70,9 @@ end
 function love.keypressed(key, unicode)
     if key == 's' then
         saveMapToDisk(map)
+    end
+    if key == 'l' then
+        loadMapFromDisk("map01.lua")
     end
 end
 
@@ -150,7 +163,7 @@ emptySpriteBatch = love.graphics.newSpriteBatch( emptyWall, 9000)
 setQuads(numberOfImages)
 
 
-mapSize = 4
+mapSize = math.sqrt(#map) 
 windowWidth = love.graphics.getWidth()
 windowHeight = love.graphics.getHeight()
 screenScale = 0.5
@@ -161,6 +174,7 @@ function love.load()
    love.graphics.setMode(1280,800, true, true)
    love.mouse.setVisible(true)
    love.graphics.setColorMode("replace")
+   loadMapFromDisk("map01.lua")
 end
 
 function love.draw()
