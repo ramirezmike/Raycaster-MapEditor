@@ -16,7 +16,7 @@ function saveMapToDisk(map)
     end
     mapString = mapString .. tostring(map[#map]) .. "} \n return map"
 
-    local file = (io.open("map02.lua", "w"))
+    local file = (io.open("map01.lua", "w"))
     file:write(mapString)
     file:close()
 end
@@ -34,6 +34,15 @@ function changeSelectedTexture()
     end
 end
 
+function drawDebug()
+    love.graphics.setColor(0,0,0)
+    love.graphics.print("Current FPS: "..tostring(love.timer.getFPS()), 10, 10)
+    love.graphics.print("Map L/W    : "..tostring(mapSize), 10, 25)
+    love.graphics.print("# of Blocks: "..tostring(mapSize*mapSize), 10, 40)
+    love.graphics.print("SelTexture : "..tostring(selectedTexture), 10, 55)
+--    love.graphics.print("selWallX   : "..tostring(positionXFromArrayIndex(selectedWall)), 10, 70)
+ --   love.graphics.print("selWallY   : "..tostring(math.floor(positionYFromArrayIndex(selectedWall) + 0.5)), 10, 85)
+end
 
 function love.update(dt)
     if love.mouse.isDown('l') then
@@ -150,6 +159,7 @@ screenHeight = windowHeight / screenScale
 function love.load()
    love.graphics.setMode(1280,800, true, true)
    love.mouse.setVisible(true)
+   love.graphics.setColorMode("replace")
 end
 
 function love.draw()
@@ -163,4 +173,7 @@ function love.draw()
             end
         end
     end
+    love.graphics.setColorMode("modulate")
+    drawDebug()
+    love.graphics.setColorMode("replace")
 end
