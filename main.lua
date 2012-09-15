@@ -40,17 +40,15 @@ function love.update(dt)
         local x, y = love.mouse.getPosition()
         mouseInBox(x,y)
     end
+    if love.keyboard.isDown('up') then
+        increaseMapSize()
+    end
+    if love.keyboard.isDown('down') then
+        decreaseMapSize()
+    end
 end
 
 function love.keypressed(key, unicode)
-    if key == '+' or key == 'up' then
-       increaseMapSize() 
-    end
-
-    if key == '-' or key == 'down' then
-       decreaseMapSize()
-    end
-
     if key == 's' then
         saveMapToDisk(map)
     end
@@ -101,10 +99,6 @@ function mouseInBox(x, y)
     for i=1,#map do
         local bx = positionXFromArrayIndex(i)*editorBlockSpace 
         local by = positionYFromArrayIndex(i)*editorBlockSpace
---        print ("THIS IS BX: ".. bx)
- --       print ("THIS IS X: ".. x)
-  --      print ("THIS IS BY: ".. by)
-   --     print ("THIS IS Y: ".. y)
         if (boxCollision(x,y,bx,by,editorBlockSize,editorBlockSize)) then changeBoxTexture(i) end
     end    
 end
