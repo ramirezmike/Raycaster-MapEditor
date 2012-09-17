@@ -9,6 +9,9 @@ editorBlockSize = 20
 editorBlockSpace = 20
 selectedTexture = 1
 
+mapX = 0
+mapY = 0
+
 function saveMapToDisk(map)
     local mapString = "map = {"
     for i = 1, #map - 1 do
@@ -24,7 +27,6 @@ end
 function loadMapFromDisk(mapName)
     local e = love.filesystem.exists("map01.lua")
     if (e) then 
-        print ("IT EXISTS")
         chunk = love.filesystem.load(mapName)
         map = chunk()
         mapSize = math.sqrt(#map) 
@@ -65,10 +67,30 @@ function love.update(dt)
     if love.keyboard.isDown('down') then
         decreaseMapSize()
     end
+    if love.keyboard.isDown('right') then
+        editorBlockSpace = editorBlockSpace + 1
+        editorBlockSize = editorBlockSize + 1
+    end
+    if love.keyboard.isDown('left') then
+        editorBlockSpace = editorBlockSpace - 1
+        editorBlockSize = editorBlockSize - 1
+    end
+    if love.keyboard.isDown('w') then
+        mapY = mapY-10
+    end
+    if love.keyboard.isDown('s') then
+        mapY = mapY+10
+    end
+    if love.keyboard.isDown('a') then
+        mapX = mapX-10
+    end
+    if love.keyboard.isDown('d') then
+        mapX = mapX+10
+    end
 end
 
 function love.keypressed(key, unicode)
-    if key == 's' then
+    if key == 'o' then
         saveMapToDisk(map)
     end
     if key == 'l' then
@@ -110,7 +132,7 @@ function generateMapWithSize(size)
 end
 
 function boxCollision(mx, my, bx, by, bw, bh)
-    if (mx > bx and mx < bx + bw) and (my > by and my < by + bh) then
+    if (mx > bx + mapX and mx < mapX + bx + bw) and (my > by + mapY and my < mapY + by + bh) then
         return true
     else
         return false
@@ -147,7 +169,6 @@ end
 
 function setQuads(numberOfImages)
     QUADS[0] = love.graphics.newQuad(0, 0, editorBlockSize, editorBlockSize, tileSize, tileSize)
-    print (numberOfImages)
     for i=1,numberOfImages+1 do
         QUADS[i] = love.graphics.newQuad(0,0 + ((i-1)*tileSize),editorBlockSize,editorBlockSize,tileSize,tileSize*numberOfImages)
     end
@@ -182,9 +203,9 @@ function love.draw()
         for j=0,mapSize-1 do
             local index = indexFromCoordinates(j,i)
             if (map[index] == 0) then
-                love.graphics.drawq(emptyWall,QUADS[map[index]],j*editorBlockSpace,i*editorBlockSpace,0,1,1)
+                love.graphics.drawq(emptyWall,QUADS[map[index]],j*editorBlockSpace+mapX,mapY+i*editorBlockSpace,0,1,1)
             else
-                love.graphics.drawq(wallsImgs,QUADS[map[index]],j*editorBlockSpace,i*editorBlockSpace,0,1,1)
+                love.graphics.drawq(wallsImgs,QUADS[map[index]],mapX+j*editorBlockSpace,mapY+i*editorBlockSpace,0,1,1)
             end
         end
     end
