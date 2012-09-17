@@ -1,3 +1,7 @@
+local red = 85
+local blue = 170
+local green = 255
+
 map = { 
  1,1,1,1,    
  1,0,0,1,    
@@ -6,11 +10,16 @@ map = {
  }
 
 editorBlockSize = 20
-editorBlockSpace = 20
+editorBlockSpace = 30
 selectedTexture = 1
+windowWidth = love.graphics.getWidth()
+windowHeight = love.graphics.getHeight()
+screenScale = 0.5
+screenWidth = windowWidth / screenScale
+screenHeight = windowHeight / screenScale
 
-mapX = 0
-mapY = 0
+mapX = 100 
+mapY = 100 
 
 function saveMapToDisk(map)
     local mapString = "map = {"
@@ -47,7 +56,9 @@ function changeSelectedTexture()
 end
 
 function drawDebug()
-    love.graphics.setColor(0,0,0)
+    love.graphics.setColor(0,30,90)
+    love.graphics.rectangle("fill",0,0,120,80)
+    love.graphics.setColor(255,255,255)
     love.graphics.print("Current FPS: "..tostring(love.timer.getFPS()), 10, 10)
     love.graphics.print("Map L/W    : "..tostring(mapSize), 10, 25)
     love.graphics.print("# of Blocks: "..tostring(mapSize*mapSize), 10, 40)
@@ -87,6 +98,13 @@ function love.update(dt)
     if love.keyboard.isDown('d') then
         mapX = mapX+10
     end
+    red = red + 1
+    blue = blue + 1
+    green = green + 1
+   
+    if red > 255 then red = -255 end
+    if green > 255  then green = -255 end
+    if blue > 255 then blue = -255 end
 end
 
 function love.keypressed(key, unicode)
@@ -185,11 +203,6 @@ setQuads(numberOfImages)
 
 
 mapSize = math.sqrt(#map) 
-windowWidth = love.graphics.getWidth()
-windowHeight = love.graphics.getHeight()
-screenScale = 0.5
-screenWidth = windowWidth / screenScale
-screenHeight = windowHeight / screenScale
 
 function love.load()
    love.graphics.setMode(1280,800, true, true)
@@ -199,6 +212,10 @@ function love.load()
 end
 
 function love.draw()
+    love.graphics.setColor(math.abs(red),math.abs(green),math.abs(blue))
+    love.graphics.rectangle( "fill",
+     0,0,screenWidth,screenHeight
+    )
     for i=0,mapSize-1 do
         for j=0,mapSize-1 do
             local index = indexFromCoordinates(j,i)
