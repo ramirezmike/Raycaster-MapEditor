@@ -60,12 +60,6 @@ function loadMapFromDisk(mapName)
     end
 end
 
-function love.mousepressed(x, y, button)
-    if button == 'r' then
-        changeSelectedTexture()
-    end
-end
-
 function changeSelectedTexture()
     selectedTexture = selectedTexture + 1
     if (selectedTexture == numberOfImages+1) then
@@ -128,6 +122,9 @@ function love.update(dt)
 end
 
 function love.mousepressed(x, y, button)
+    if button == 'r' then
+        changeSelectedTexture()
+    end
     if button == "l" then
         local x, y = love.mouse.getPosition()
         mouseInBox(x,y)
