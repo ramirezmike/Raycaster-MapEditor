@@ -2,6 +2,10 @@ local red = 85
 local blue = 170
 local green = 255
 
+spriteMode = false
+SPRITES = {}
+spriteCount = 1
+
 map = { 
  1,1,1,1,    
  1,0,0,1,    
@@ -26,9 +30,23 @@ function saveMapToDisk(map)
     for i = 1, #map - 1 do
         mapString = mapString .. tostring(map[i]) .. ","
     end
-    mapString = mapString .. tostring(map[#map]) .. "} \n return map"
+    mapString = mapString .. tostring(map[#map]) .. "}"
+
+    for i=1,#SPRITES do
+        local sprite = SPRITES[i]
+        mapString = mapString .. "\n SPRITES[" .. i .. "] = {"
+        mapString = mapString .. "x = " .. sprite.x
+        mapString = mapString .. ",y = " .. sprite.y
+        mapString = mapString .. ",img = " .. sprite.img
+        mapString = mapString .. ",visible = " .. tostring(sprite.visible) 
+        mapString = mapString .. ",block = " .. tostring(sprite.block)
+        mapString = mapString .. "}"
+    end
+    
+    mapString = mapString .. "\n return map"
 
     local file = (io.open("map01.lua", "w"))
+    print (mapString)
     file:write(mapString)
     file:close()
 end
@@ -69,8 +87,10 @@ end
 
 function love.update(dt)
     if love.mouse.isDown('l') then
-        local x, y = love.mouse.getPosition()
-        mouseInBox(x,y)
+        if (not spriteMode) then
+            local x, y = love.mouse.getPosition()
+            mouseInBox(x,y)
+        end
     end
     if love.keyboard.isDown('up') then
         increaseMapSize()
@@ -107,12 +127,22 @@ function love.update(dt)
     if blue > 255 then blue = -255 end
 end
 
+function love.mousepressed(x, y, button)
+    if button == "l" then
+        local x, y = love.mouse.getPosition()
+        mouseInBox(x,y)
+    end
+end
+
 function love.keypressed(key, unicode)
     if key == 'o' then
         saveMapToDisk(map)
     end
     if key == 'l' then
         loadMapFromDisk("map01.lua")
+    end
+    if key == 'v' then
+        spriteMode = not(spriteMode) 
     end
 end
 
@@ -161,13 +191,28 @@ function mouseInBox(x, y)
     for i=1,#map do
         local bx = positionXFromArrayIndex(i)*editorBlockSpace 
         local by = positionYFromArrayIndex(i)*editorBlockSpace
-        if (boxCollision(x,y,bx,by,editorBlockSize,editorBlockSize)) then changeBoxTexture(i) end
+        if (boxCollision(x,y,bx,by,editorBlockSize,editorBlockSize)) then
+            if (not spriteMode) then changeBoxTexture(i) end
+            if (spriteMode) then addSprite(i) end
+        end
     end    
 end
 
 function changeBoxTexture(i)
   map[i] = selectedTexture 
 end
+
+function addSprite(i)
+    SPRITES[spriteCount] = {
+        x = positionXFromArrayIndex(i), 
+        y = positionYFromArrayIndex(i), 
+        img = selectedTexture,
+        visible = false,
+        block = true
+    }
+    spriteCount = spriteCount + 1
+end
+
 function indexFromCoordinates(x,y)
     index = 1 + (math.floor(y)*mapSize) + (math.floor(x))
     return index
@@ -186,6 +231,7 @@ function positionYFromArrayIndex(index)
 end
 
 function setQuads(numberOfImages)
+    SPRITEQUAD[0] = love.graphics.newQuad(0,0,editorBlockSize,editorBlockSize,10,10)
     QUADS[0] = love.graphics.newQuad(0, 0, editorBlockSize, editorBlockSize, tileSize, tileSize)
     for i=1,numberOfImages+1 do
         QUADS[i] = love.graphics.newQuad(0,0 + ((i-1)*tileSize),editorBlockSize,editorBlockSize,tileSize,tileSize*numberOfImages)
@@ -193,9 +239,11 @@ function setQuads(numberOfImages)
 end
 
 QUADS = {}
+SPRITEQUAD = {}
 tileSize = 64
 wallsImgs = love.graphics.newImage("walls.png")
 emptyWall = love.graphics.newImage("empty.png")
+spriteImage = love.graphics.newImage("sprite.png")
 numberOfImages = (wallsImgs:getHeight()/tileSize)
 spriteBatch = love.graphics.newSpriteBatch( wallsImgs, 9000)
 emptySpriteBatch = love.graphics.newSpriteBatch( emptyWall, 9000)
@@ -226,6 +274,11 @@ function love.draw()
             end
         end
     end
+    for i=1,#SPRITES do
+        local sprite = SPRITES[i]
+        love.graphics.drawq(spriteImage,SPRITEQUAD[0],sprite.x*editorBlockSpace+mapX,mapY+sprite.y*editorBlockSpace,0,1,1)
+    end
+
     love.graphics.setColorMode("modulate")
     drawDebug()
     love.graphics.setColorMode("replace")
