@@ -40,6 +40,15 @@ function saveMapToDisk(map)
         mapString = mapString .. ",img = " .. sprite.img
         mapString = mapString .. ",visible = " .. tostring(sprite.visible) 
         mapString = mapString .. ",block = " .. tostring(sprite.block)
+        mapString = mapString .. ",speed = " .. tostring(sprite.speed) 
+        mapString = mapString .. ",dir = " .. tostring(sprite.dir) 
+        mapString = mapString .. ",rot = " .. tostring(sprite.rot) 
+        mapString = mapString .. ",moveSpeed = " .. tostring(sprite.moveSpeed) 
+        mapString = mapString .. ",rotSpeed = " .. tostring(sprite.rotSpeed) 
+        mapString = mapString .. ",totalStates = " .. tostring(sprite.totalStates) 
+        mapString = mapString .. ",state = " .. tostring(sprite.state) 
+        mapString = mapString .. ",frameTimer = " .. tostring(sprite.frameTimer) 
+        mapString = mapString .. ",walkAnimationSpeed = " .. tostring(sprite.walkAnimationSpeed) 
         mapString = mapString .. "}"
     end
     
@@ -205,7 +214,16 @@ function addSprite(i)
         y = positionYFromArrayIndex(i), 
         img = selectedTexture,
         visible = false,
-        block = true
+        block = true,
+        speed = 0,
+        dir = 0,
+        rot = 0,
+        moveSpeed = 0.05,
+        rotSpeed = 3,
+        totalStates = 12,
+        frameTimer = 0,
+        walkAnimationSpeed = 5,
+        state = 0
     }
     spriteCount = spriteCount + 1
 end
