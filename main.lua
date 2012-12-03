@@ -3,7 +3,12 @@ local blue = 170
 local green = 255
 
 spriteMode = false
+spawnMode = false
 SPRITES = {}
+PLAYER = {
+    x = 2,
+    y = 2
+}
 spriteCount = 1
 
 map = { 
@@ -51,6 +56,8 @@ function saveMapToDisk(map)
         mapString = mapString .. ",walkAnimationSpeed = " .. tostring(sprite.walkAnimationSpeed) 
         mapString = mapString .. "}"
     end
+
+    mapString = mapString .. "\n SPAWNPOINT = { x = " .. PLAYER.x .. ", y = " .. PLAYER.y .. "}"
     
     mapString = mapString .. "\n return map"
 
@@ -150,6 +157,10 @@ function love.keypressed(key, unicode)
     if key == 'v' then
         spriteMode = not(spriteMode) 
     end
+    if key == 'm' then
+            local x, y = love.mouse.getPosition()
+            setSpawnPoint(x, y)
+    end
 end
 
 function increaseMapSize()
@@ -243,6 +254,17 @@ function positionYFromArrayIndex(index)
     local y = ((index-1) / mapSize)
     y = math.floor(y)
     return y
+end
+
+function setSpawnPoint(x,y)
+    for i=1,#map do
+        local bx = positionXFromArrayIndex(i)*editorBlockSpace 
+        local by = positionYFromArrayIndex(i)*editorBlockSpace
+        if (boxCollision(x,y,bx,by,editorBlockSize,editorBlockSize)) then
+            PLAYER.x = bx/editorBlockSpace
+            PLAYER.y = by/editorBlockSpace 
+        end
+    end    
 end
 
 function setQuads(numberOfImages)
