@@ -48,10 +48,15 @@ function saveMapToDisk(map)
         mapString = mapString .. ",speed = " .. tostring(sprite.speed) 
         mapString = mapString .. ",dir = " .. tostring(sprite.dir) 
         mapString = mapString .. ",rot = " .. tostring(sprite.rot) 
+        mapString = mapString .. ",hit = " .. "false" 
+        mapString = mapString .. ",hitPause = " .. "0.1" 
         mapString = mapString .. ",moveSpeed = " .. tostring(sprite.moveSpeed) 
         mapString = mapString .. ",rotSpeed = " .. tostring(sprite.rotSpeed) 
         mapString = mapString .. ",totalStates = " .. tostring(sprite.totalStates) 
         mapString = mapString .. ",state = " .. tostring(sprite.state) 
+        mapString = mapString .. ",wallPositionX = " .. "0" 
+        mapString = mapString .. ",wallPositionY = " .. "0" 
+        mapString = mapString .. ",objType = " .. "sprite" 
         mapString = mapString .. ",frameTimer = " .. tostring(sprite.frameTimer) 
         mapString = mapString .. ",walkAnimationSpeed = " .. tostring(sprite.walkAnimationSpeed) 
         mapString = mapString .. "}"
